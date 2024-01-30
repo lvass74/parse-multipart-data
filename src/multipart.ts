@@ -136,11 +136,19 @@ export function DemoData(): { body: Buffer; boundary: string } {
   body += '------WebKitFormBoundaryvef1fLxmoUdYZWXp\r\n'
   body += 'Content-Type: text/plain\r\n'
   body +=
-    'Content-Disposition: form-data; name="uploads[]"; filename="B.txt"\r\n'
+    'Content-Disposition: form-data; filename="B.txt"; name="uploads[]"\r\n'
   body += '\r\n'
   body += '@22X'
   body += '222Y\r\n'
   body += '222Z\r222W\n2220\r\n666@\r\n'
+  body += '------WebKitFormBoundaryvef1fLxmoUdYZWXp\r\n'
+  body += 'Content-Type: text/plain\r\n'
+  body +=
+    'Content-Disposition: form-data; name="uploads[]"\r\n'
+  body += '\r\n'
+  body += '@33X'
+  body += '333Y\r\n'
+  body += '333Z\r333W\n3330\r\n999@\r\n'
   body += '------WebKitFormBoundaryvef1fLxmoUdYZWXp\r\n'
   body += 'Content-Disposition: form-data; name="input1"\r\n'
   body += '\r\n'
@@ -175,7 +183,10 @@ function process(part: Part): Input {
   }
   const header = part.contentDispositionHeader.split(';')
 
-  const filenameData = header[2]
+  const filenameData = header.find((h) => h.split('=')[0].trim() === 'filename');
+  const nameData = header.find((h) => h.split('=')[0].trim() === 'name');
+  if(!nameData) throw new Error(`No name field found in content-disposition header: ${header}`);
+
   let input = {}
   if (filenameData) {
     input = obj(filenameData)
@@ -188,10 +199,11 @@ function process(part: Part): Input {
       enumerable: true,
       configurable: true
     })
+
   }
   // always process the name field
   Object.defineProperty(input, 'name', {
-    value: header[1].split('=')[1].replace(/"/g, ''),
+    value: nameData.split('=')[1].replace(/"/g, ''),
     writable: true,
     enumerable: true,
     configurable: true

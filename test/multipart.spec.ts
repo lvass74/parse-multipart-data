@@ -17,6 +17,11 @@ const expected = [
     type: 'text/plain',
     data: Buffer.from('@22X222Y\r\n222Z\r222W\n2220\r\n666@')
   },
+  {
+    name: 'uploads[]',
+    type: 'text/plain',
+    data: Buffer.from('@33X333Y\r\n333Z\r333W\n3330\r\n999@')
+  },
   { name: 'input1', data: Buffer.from('value1') }
 ]
 describe('Multipart', function() {
@@ -24,7 +29,7 @@ describe('Multipart', function() {
     const { body, boundary } = DemoData()
     const parts = parse(body, boundary)
 
-    expect(parts.length).to.be.equal(3)
+    expect(parts.length).to.be.equal(4)
     for (let i = 0; i < expected.length; i++) {
       const data = expected[i]
       const part = parts[i]
