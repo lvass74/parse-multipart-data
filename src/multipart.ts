@@ -179,7 +179,9 @@ function process(part: Part): Input {
   let input = {}
   if (filenameData) {
     input = obj(filenameData)
-    const contentType = part.contentTypeHeader.split(':')[1].trim()
+  }
+  if (part.contentTypeHeader) {
+    const contentType = part.contentTypeHeader.split(':')[1].trim() || "text/plain"
     Object.defineProperty(input, 'type', {
       value: contentType,
       writable: true,
